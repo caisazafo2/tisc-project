@@ -85,10 +85,9 @@ class GoertzelDTMF:
             frecuencias[frecuenciaDTMF] = potencia / (self.potenciaTotal[frecuenciaDTMF] * self.indicesN[frecuenciaDTMF])
         return self.identificarTecla(frecuencias)
 
-# load wav file
-wav = wave.open('./numeros.wav', 'r')
-(numeroCanalesAudio, anchoMuestra, frecuenciaMuestreo, numeroMuestrasAudio, tipoCompresion, nombreCompresion) = wav.getparams()
-muestrasAudio = wav.readframes(numeroMuestrasAudio * numeroCanalesAudio)
+archivoWAV = wave.open('./fijo.wav', 'r')
+(numeroCanalesAudio, anchoMuestra, frecuenciaMuestreo, numeroMuestrasAudio, tipoCompresion, nombreCompresion) = archivoWAV.getparams()
+muestrasAudio = archivoWAV.readframes(numeroMuestrasAudio * numeroCanalesAudio)
 #Conversion del audio a un arreglo de numeros enteros
 muestrasAudio = struct.unpack_from("%dH" % numeroMuestrasAudio * numeroCanalesAudio, muestrasAudio)
 
@@ -124,4 +123,4 @@ for indice in range(0, len(canalIzquierda) - binSize, binSize / binSizeSplit):
     else:
         contador = 0
         valorTeclaAnterior = value
-print cadenaTeclasOprimidas
+print "La secuencia es " + cadenaTeclasOprimidas
