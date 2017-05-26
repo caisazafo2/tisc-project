@@ -84,7 +84,7 @@ class pygoertzel_dtmf:
         return self.__get_number(freqs)
 if __name__ == '__main__':
     # load wav file
-    wav = wave.open('./numeros.wav', 'r')
+    wav = wave.open('./celular.wav', 'r')
     (nchannels, sampwidth, framerate, nframes, comptype, compname) = wav.getparams()
     frames = wav.readframes(nframes * nchannels)
     # convert wave file to array of integers

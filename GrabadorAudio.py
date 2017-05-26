@@ -5,8 +5,8 @@ numeroMuestrasPorBuffer = 1024
 formatoAudio = pyaudio.paInt16
 numeroCanalesAudio = 2
 frecuenciaSonido = 44100
-tiempoGrabacion = 15
-nombreArchivoAudio = "output.wav"
+tiempoGrabacion = 20
+nombreArchivoAudio = "llamada.wav"
 
 grabadorAudio = pyaudio.PyAudio()
 audioGrabado = grabadorAudio.open(format = formatoAudio, channels = numeroCanalesAudio, rate = frecuenciaSonido, input = True, frames_per_buffer = numeroMuestrasPorBuffer)

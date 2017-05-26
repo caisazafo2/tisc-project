@@ -1,6 +1,7 @@
 import wave
 import struct
 import math
+import random
 
 class GoertzelDTMF:
     def __init__(self, frecuenciaMuestreo):
@@ -85,42 +86,60 @@ class GoertzelDTMF:
             frecuencias[frecuenciaDTMF] = potencia / (self.potenciaTotal[frecuenciaDTMF] * self.indicesN[frecuenciaDTMF])
         return self.identificarTecla(frecuencias)
 
-archivoWAV = wave.open('./fijo.wav', 'r')
-(numeroCanalesAudio, anchoMuestra, frecuenciaMuestreo, numeroMuestrasAudio, tipoCompresion, nombreCompresion) = archivoWAV.getparams()
-muestrasAudio = archivoWAV.readframes(numeroMuestrasAudio * numeroCanalesAudio)
-#Conversion del audio a un arreglo de numeros enteros
-muestrasAudio = struct.unpack_from("%dH" % numeroMuestrasAudio * numeroCanalesAudio, muestrasAudio)
+def decode( grabacion ):
+    archivoWAV = wave.open(grabacion, 'r')
+    (numeroCanalesAudio, anchoMuestra, frecuenciaMuestreo, numeroMuestrasAudio, tipoCompresion, nombreCompresion) = archivoWAV.getparams()
+    muestrasAudio = archivoWAV.readframes(numeroMuestrasAudio * numeroCanalesAudio)
+    #Conversion del audio a un arreglo de numeros enteros
+    muestrasAudio = struct.unpack_from("%dH" % numeroMuestrasAudio * numeroCanalesAudio, muestrasAudio)
 
-#Determinacion de la canalizacion del sonido (Si esta en Stereo o en Mono)
-canalIzquierda = []
-canalDerecha = []
-if numeroCanalesAudio == 2:
-    for numero in range(0, len(muestrasAudio), 2):
-        canalIzquierda.append(muestrasAudio[numero])
-    for numero in range(1, len(muestrasAudio), 2):
-        canalDerecha.append(muestrasAudio[numero])
-else:
-    canalIzquierda = muestrasAudio
-    canalDerecha = canalIzquierda
-
-binSize = 1600
-#Separar bin en cierto numero de partes para reducir errores debido al ruido
-binSizeSplit = 1
-cadenaTeclasOprimidas = ""
-valorTeclaAnterior = ""
-contador = 0
-valorTeclaAnteriorAuxiliar = ""
-for indice in range(0, len(canalIzquierda) - binSize, binSize / binSizeSplit):
-    goertzelDTMF = GoertzelDTMF(frecuenciaMuestreo)
-    for valorMuestreado in canalIzquierda[indice:indice + binSize]:
-        value = goertzelDTMF.run(valorMuestreado)
-    if value == valorTeclaAnterior:
-        contador += 1
-        if contador >= 10:
-            cadenaTeclasOprimidas += value
-            valorTeclaAnteriorAuxiliar = value
-            contador = 0
+    #Determinacion de la canalizacion del sonido (Si esta en Stereo o en Mono)
+    canalIzquierda = []
+    canalDerecha = []
+    if numeroCanalesAudio == 2:
+        for numero in range(0, len(muestrasAudio), 2):
+            canalIzquierda.append(muestrasAudio[numero])
+        for numero in range(1, len(muestrasAudio), 2):
+            canalDerecha.append(muestrasAudio[numero])
     else:
-        contador = 0
-        valorTeclaAnterior = value
-print "La secuencia es " + cadenaTeclasOprimidas
+        canalIzquierda = muestrasAudio
+        canalDerecha = canalIzquierda
+
+    binSize = 1600
+    #Separar bin en cierto numero de partes para reducir errores debido al ruido
+    binSizeSplit = 1
+    cadenaTeclasOprimidas = ""
+    valorTeclaAnterior = ""
+    contador = 0
+    valorTeclaAnteriorAuxiliar = ""
+    for indice in range(0, len(canalIzquierda) - binSize, binSize / binSizeSplit):
+        goertzelDTMF = GoertzelDTMF(frecuenciaMuestreo)
+        for valorMuestreado in canalIzquierda[indice:indice + binSize]:
+            value = goertzelDTMF.run(valorMuestreado)
+        if value == valorTeclaAnterior:
+            contador += 1
+            if contador >= 10:
+                cadenaTeclasOprimidas += value
+                valorTeclaAnteriorAuxiliar = value
+                contador = 0
+        else:
+            contador = 0
+            valorTeclaAnterior = value
+    return cadenaTeclasOprimidas
+
+
+
+informacionLlamada = decode("./llamada.wav")
+print informacionLlamada
+cedula = informacionLlamada.split("#")[0]
+cita = int(informacionLlamada.split("#")[1])
+
+citas = ["Transferir a un asesor", "Medicina general", "Odontologia", "Higiene oral", "Ortopedia", "Nutricion", "Planificacion Familiar", "Neurologia", "Psicologia", "Control prenatal"]
+print "Cedula paciente: " + cedula
+if(cita == 0):
+    print citas[cita]
+else:
+    print "Cita solicitada: " + citas[cita]
+    print "Fecha: " + str(random.randint(1,30)) + "/" +str(random.randint(5,12))+"/2017"
+    print "Hora: " + str(random.randint(6,20)) + ":" + str(random.randrange(0,60,20))
+    print "Consultorio: " + str(random.randint(201,215))
