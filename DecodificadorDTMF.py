@@ -2,7 +2,7 @@ import wave
 import struct
 import math
 import random
-
+from datetime import datetime, date, time, timedelta
 class GoertzelDTMF:
     def __init__(self, frecuenciaMuestreo):
         self.frecuenciaMuestreo = frecuenciaMuestreo
@@ -128,18 +128,16 @@ def decode( grabacion ):
     return cadenaTeclasOprimidas
 
 
-
-informacionLlamada = decode("./llamada.wav")
-print informacionLlamada
-cedula = informacionLlamada.split("#")[0]
-cita = int(informacionLlamada.split("#")[1])
-
+cedula = decode("./cedula.wav")
+cita = int(decode("./cita.wav")[0])
+dias = int(decode("./dias.wav"))
+print cedula + "    " + str(cita) + ";   " + str(dias)
 citas = ["Transferir a un asesor", "Medicina general", "Odontologia", "Higiene oral", "Ortopedia", "Nutricion", "Planificacion Familiar", "Neurologia", "Psicologia", "Control prenatal"]
 print "Cedula paciente: " + cedula
 if(cita == 0):
     print citas[cita]
 else:
     print "Cita solicitada: " + citas[cita]
-    print "Fecha: " + str(random.randint(1,30)) + "/" +str(random.randint(5,12))+"/2017"
+    print "Fecha: " + str( date.today() + timedelta(days=dias))
     print "Hora: " + str(random.randint(6,20)) + ":" + str(random.randrange(0,60,20))
     print "Consultorio: " + str(random.randint(201,215))
